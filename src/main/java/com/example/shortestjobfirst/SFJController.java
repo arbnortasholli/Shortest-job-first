@@ -49,27 +49,38 @@ public class SFJController {
     @FXML
     private Label avgRTLabel;
 
-
+    // Krijon një ObservableList që përmban objekte të tipit Process, për t'u përdorur në TableView.
     private ObservableList<Process> processList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
+        // Lidh kolonën idColumn me atributin "id" të klasës Process.
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        // Lidh kolonën arrivalTimeColumn me atributin "arrivalTime".
         arrivalTimeColumn.setCellValueFactory(new PropertyValueFactory<>("arrivalTime"));
+        // Lidh kolonën burstTimeColumn me atributin "burstTime".
         burstTimeColumn.setCellValueFactory(new PropertyValueFactory<>("burstTime"));
+        // Lidh kolonën responseTimeColumn me atributin "responseTime".
         responseTimeColumn.setCellValueFactory(new PropertyValueFactory<>("responseTime"));
+        // Lidh kolonën completionTimeColumn me atributin "completionTime".
         completionTimeColumn.setCellValueFactory(new PropertyValueFactory<>("completionTime"));
+        // Lidh kolonën turnaroundTimeColumn me atributin "turnaroundTime".
         turnaroundTimeColumn.setCellValueFactory(new PropertyValueFactory<>("turnaroundTime"));
+        // Lidh kolonën waitingTimeColumn me atributin "waitingTime".
         waitingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("waitingTime"));
 
+        // Vendos listën processList si burimi i të dhënave për tabelën Table.
         Table.setItems(processList);
         int rowHeight = 28;
         int headerHeight = 26;
 
+
+        // Konfiguron tabelën që të ketë lartësi fikse për çdo qelizë.
         Table.setFixedCellSize(rowHeight);
         Table.setPrefHeight((rowHeight * 6) + headerHeight - 24);
         Table.setMaxHeight((rowHeight * 6) + headerHeight - 22);
 
+        // Shton një event listener që aktivizon onAddProcesses kur shtypet ENTER mbi butonin addbtn.
         addbtn.setOnKeyPressed(event -> {
             if (event.getCode().toString().equals("ENTER")) {
                 onAddProcesses();
@@ -80,12 +91,17 @@ public class SFJController {
     @FXML
     public void onAddProcesses() {
         try {
+            // Krijon një objekt Process p1 duke lexuar vlerat nga inputet e përdoruesit për arrival dhe burst time.
             Process p1 = new Process(
                     Integer.parseInt(arrivalTimeProcess1.getText()),
                     Integer.parseInt(burstTimeProcess1.getText()));
+
+            // Krijon procesin e dytë p2 me vlera të lexuara nga inputet përkatëse.
             Process p2 = new Process(
                     Integer.parseInt(arrivalTimeProcess2.getText()),
                     Integer.parseInt(burstTimeProcess2.getText()));
+
+
             Process p3 = new Process(
                     Integer.parseInt(arrivalTimeProcess3.getText()),
                     Integer.parseInt(burstTimeProcess3.getText()));
@@ -96,10 +112,15 @@ public class SFJController {
                     Integer.parseInt(arrivalTimeProcess5.getText()),
                     Integer.parseInt(burstTimeProcess5.getText()));
 
+
+            // Shton të gjithë proceset në listën processList për t'u shfaqur në tabelë.
             processList.addAll(p1, p2, p3, p4, p5);
 
+
+            // Thërret metodën që rendit proceset sipas burst time (me siguri për ndonjë algoritëm scheduling).
             sortProcessesByBurstTime();
 
+            // Thërret metodën që llogarit kohët për proceset (waiting, turnaround, etj.).
             calculateTimes();
         } catch (NumberFormatException e) {
             showError("Invalid input! Please enter valid numbers.");
