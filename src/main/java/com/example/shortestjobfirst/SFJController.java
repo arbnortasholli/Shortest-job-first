@@ -108,36 +108,37 @@ public class SFJController {
 
     private void sortProcessesByBurstTime() {
         processList.sort(Comparator.comparingInt(Process::getBurstTime));
-    }
+        // Comparator.comparingInt - krahason vlera numerike nga objektet, krahasohet getBurstTime() i secilit proces
+    }   // rendit listen e proceseve processList sipas burstTime ne menyre rritese
 
     private void calculateTimes() {
         int currentTime = 0;
         for (Process process : processList) {
-            if (currentTime < process.getArrivalTime()) {
+            if (currentTime < process.getArrivalTime()) { // nese procesi nuk ka ardhur ende koha shtyhet ne arrivalTime
                 currentTime = process.getArrivalTime();
             }
+            // currentTime mban kohen aktuale te sistemit
+            process.setResponseTime(currentTime - process.getArrivalTime()); // koha deri ne fillimin e ekzekutimit
 
-            process.setResponseTime(currentTime - process.getArrivalTime());
+            process.setCompletionTime(currentTime + process.getBurstTime()); // koha kur perfundon procesi
 
-            process.setCompletionTime(currentTime + process.getBurstTime());
+            process.setTurnaroundTime(process.getCompletionTime() - process.getArrivalTime()); // koha totale prej kur arrin deri kur perfundon procesi
 
-            process.setTurnaroundTime(process.getCompletionTime() - process.getArrivalTime());
+            process.setWaitingTime(process.getTurnaroundTime() - process.getBurstTime()); // koha qe procesi ka pritur ne rradhe
 
-            process.setWaitingTime(process.getTurnaroundTime() - process.getBurstTime());
-
-            currentTime = process.getCompletionTime();
+            currentTime = process.getCompletionTime(); // koha perditesohet ne completionTime
         }
 
         double totalTAT = 0, totalWT = 0, totalRT = 0;
         int size = processList.size();
 
         for (Process p : processList) {
-            totalTAT += p.getTurnaroundTime();
+            totalTAT += p.getTurnaroundTime(); // per secilin proces ne liste, caktohen totalTAT, totalWT, totalRT
             totalWT += p.getWaitingTime();
             totalRT += p.getResponseTime();
         }
 
-        avgTATLabel.setText(String.format("%.2f", totalTAT / size));
+        avgTATLabel.setText(String.format("%.2f", totalTAT / size)); // llogariten mesataret per secilen vlere dhe vendosen ne GUI
         avgWTLabel.setText(String.format("%.2f", totalWT / size));
         avgRTLabel.setText(String.format("%.2f", totalRT / size));
 
@@ -149,6 +150,7 @@ public class SFJController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+        // shfaq paralajmerim nese perdoruesi fut te dhena jo te vlefshme psh tekst
     }
 
     public static class Process {
